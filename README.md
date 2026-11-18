@@ -83,8 +83,9 @@ ollama serve &                      # or: brew services start ollama
 ollama pull nomic-embed-text        # embeddings (required)
 ollama pull qwen2.5-coder:7b        # chat + review model
 
-# 3. backend secrets (gitignored) — then edit the values
-cp Backend/backend/.env.example Backend/backend/.env   # then fill in JWT_SECRET and GITHUB_TOKEN_KEY
+# 3. backend secrets (gitignored) — creates Backend/backend/.env with fresh JWT_SECRET + GITHUB_TOKEN_KEY
+bash scripts/setup-env.sh
+# Windows PowerShell: powershell -ExecutionPolicy Bypass -File scripts\setup-env.ps1
 
 # 4. backend → http://localhost:8080  (Swagger: /swagger-ui.html when DEV_TOOLS_ENABLED=true)
 cd Backend/backend && ./mvnw spring-boot:run
@@ -105,6 +106,17 @@ Create an OAuth App at [github.com/settings/developers](https://github.com/setti
 | Authorization callback URL | `http://localhost:5173/integrations/github/callback` |
 
 Put its client ID and secret in `Backend/backend/.env` as `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` and restart the backend. The *Continue with GitHub* button appears automatically once they are set.
+
+### Google sign-in (optional)
+
+Create an OAuth client ID (type *Web application*) at [console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials:
+
+| Field | Value |
+| --- | --- |
+| Authorized JavaScript origins | `http://localhost:5173` |
+| Authorized redirect URI | `http://localhost:8080/login/oauth2/code/google` |
+
+Put its client ID and secret in `Backend/backend/.env` as `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` and restart the backend. While the consent screen is in *Testing* mode, only accounts listed under **Test users** can sign in.
 
 ## How it works
 
